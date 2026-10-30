@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+!.env.example
+config.local.json
+*.sqlite3
+*.sqlite3-*
+backups/
+work/
+data/
+existing-runtime/
+.venv/
+node_modules/
+frontend/dist/
+*.log

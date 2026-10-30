@@ -1,0 +1,24 @@
+{
+  "id": "haixin-tools",
+  "name": "海辛受控工具",
+  "contracts": {
+    "tools": [
+      "haixin_affairs",
+      "haixin_memory_search",
+      "haixin_memory_manage",
+      "haixin_sources_search",
+      "haixin_source_read",
+      "haixin_source_import",
+      "haixin_document_write",
+      "haixin_document_read",
+      "haixin_tasks_list"
+    ]
+  },
+  "activation": {
+    "onStartup": true
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false
+  }
+}

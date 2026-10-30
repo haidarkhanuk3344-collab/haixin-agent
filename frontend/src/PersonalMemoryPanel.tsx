@@ -1,0 +1,16 @@
+import {useState} from 'react';
+import {request,type PersonalMemory} from './api';
+const labels:Record<string,string>={background:'关于你',relationship:'重要关系',experience:'共同经历',decision:'决定与原因',context:'近况'};
+const when=(value:string|number)=>new Date(typeof value==='number'?value*1000:value).toLocaleString('zh-CN',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+export function PersonalMemoryPanel({rows,busy,onAction}:{rows:PersonalMemory[];busy:boolean;onAction:(action:Record<string,unknown>)=>Promise<boolean>}){
+ const [scope,setScope]=useState<'long'|'short'>('long');const [editing,setEditing]=useState<string|null>(null);const [draft,setDraft]=useState('');const [forget,setForget]=useState<string|null>(null);
+ const [history,setHistory]=useState<Record<string,{version:number;content:string;created:string;status:string}[]>>({});const [historyError,setHistoryError]=useState('');
+ const selected=rows.filter(r=>r.scope===scope);
+ return <section aria-label="个人记忆"><div className="section-heading"><h2>关于你</h2><div className="actions" role="group" aria-label="记忆分组"><button className={scope==='long'?'primary':''} aria-pressed={scope==='long'} onClick={()=>setScope('long')}>长期</button><button className={scope==='short'?'primary':''} aria-pressed={scope==='short'} onClick={()=>setScope('short')}>近期</button></div></div>
+ {selected.length===0?<div className="empty"><p>暂无{scope==='long'?'长期':'近期'}记忆</p></div>:selected.map(r=><article className="memory-row" key={r.id}>
+ <span className="meta">{labels[r.kind]||'记忆'}{r.status==='expired'?' · 已过期':''}{r.certainty==='uncertain'?' · 尚未确定':''}</span>
+ {editing===r.id?<form onSubmit={async e=>{e.preventDefault();if(await onAction({action:'personal_memory',op:'correct',target:r.id,text:draft}))setEditing(null)}}><label>更正内容<textarea value={draft} onChange={e=>setDraft(e.target.value)} maxLength={1000} required/></label><button className="primary" disabled={busy||!draft.trim()}>保存</button><button type="button" className="quiet" onClick={()=>setEditing(null)}>取消</button></form>:<><p>{r.content}</p><div className="actions"><button onClick={()=>{setEditing(r.id);setDraft(r.content)}} disabled={busy}>更正</button><button className="quiet danger" onClick={()=>setForget(r.id)} disabled={busy}>忘记</button></div></>}
+ <details className="history" onToggle={async e=>{if(e.currentTarget.open){try{const h=await request('personal_memory?id='+r.id) as {version:number;content:string;created:string;status:string}[];setHistory(old=>({...old,[r.id]:h}));setHistoryError('')}catch{setHistoryError('来源暂未载入，请重新展开。')}}}}><summary>来源与时间</summary><p>{r.occurred||'记录于 '+when(r.created)} · 更新于 {when(r.updated)}</p>{r.expires&&<p>有效至 {when(r.expires)}</p>}<p>来自与你的对话 · 第 {r.version} 版</p>{historyError&&<p role="alert">{historyError}</p>}{history[r.id]?.filter(v=>v.status==='superseded').map(v=><p key={v.version}>历史 · {when(v.created)}：{v.content}</p>)}</details>
+ {forget===r.id&&<div className="confirm" role="alert"><p>忘记这条记忆？原聊天和事项仍保留。</p><button className="danger" disabled={busy} onClick={async()=>{if(await onAction({action:'personal_memory',op:'forget',target:r.id,confirmed:true}))setForget(null)}}>确认忘记</button><button onClick={()=>setForget(null)}>保留</button></div>}
+ </article>)}</section>;
+}

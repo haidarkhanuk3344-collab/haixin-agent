@@ -1,0 +1,9 @@
+{
+  "version": "handoff-2026-10-29-peak-usd",
+  "model": "deepseek-flash",
+  "currency": "USD",
+  "effective_date": "2026-10-29",
+  "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+  "verification": "交接文档价格基准，本阶段未重新联网核价；仅作历史参考估算",
+  "per_million": {"input": 0.30, "cacheRead": 0.006, "cacheWrite": null, "output": 1.20}
+}

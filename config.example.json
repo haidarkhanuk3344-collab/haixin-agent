@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "runtime": "./existing-runtime",
+  "node": "./existing-runtime/node-v26.13.0-darwin-arm64/bin/node",
+  "cli": "./existing-runtime/node_modules/openclaw/openclaw.mjs",
+  "state": "./existing-runtime/state",
+  "price_file": "./config/prices.json",
+  "keychain_service": "codex-personal-agent-deepseek",
+  "keychain_account": "personal-agent",
+  "process_timeout_seconds": 120
+}
